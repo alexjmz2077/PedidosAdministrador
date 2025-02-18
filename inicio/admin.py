@@ -66,8 +66,12 @@ class PagoAdmin(admin.ModelAdmin):
     autocomplete_fields = ['pedido'] 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "pedido":
-            # Filtra los pedidos que no tienen un pago registrado
-            kwargs["queryset"] = Pedido.objects.exclude(id__in=Pago.objects.values_list('pedido_id', flat=True))
+            if request.resolver_match.kwargs.get('object_id'):
+                pago_id = request.resolver_match.kwargs.get('object_id')
+                pago = Pago.objects.get(id=pago_id)
+                kwargs["queryset"] = Pedido.objects.exclude(id__in=Pago.objects.exclude(id=pago_id).values_list('pedido_id', flat=True))
+            else:
+                kwargs["queryset"] = Pedido.objects.exclude(id__in=Pago.objects.values_list('pedido_id', flat=True))
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 @admin.register(Mesa)

@@ -35,9 +35,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'inicio',  # Tu aplicación
+    #'inicio',  # Tu aplicación
     'rest_framework',
     'rest_framework.authtoken',
+    'inicio.apps.InicioConfig',
 ]
 
 REST_FRAMEWORK = {
