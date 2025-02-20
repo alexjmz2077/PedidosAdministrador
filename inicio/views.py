@@ -56,6 +56,7 @@ from .models import Categoria, Plato, Pedido, DetallePedido, Pago
 from .serializers import UserSerializer, CategoriaSerializer, PlatoSerializer, PedidoSerializer, DetallePedidoSerializer, PagoSerializer
 from rest_framework.authtoken.models import Token
 
+
 class RegisterAPIView(APIView):
     permission_classes = [permissions.AllowAny]
 
@@ -63,6 +64,11 @@ class RegisterAPIView(APIView):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
+            
+            # Añadir el usuario al grupo "Cliente"
+            grupo_clientes = Group.objects.get(name='Cliente')
+            user.groups.add(grupo_clientes)
+            
             token, created = Token.objects.get_or_create(user=user)
             return Response({'token': token.key}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -78,7 +84,7 @@ class LoginAPIView(APIView):
             token, created = Token.objects.get_or_create(user=user)
             return Response({'token': token.key}, status=status.HTTP_200_OK)
         return Response({'error': 'Invalid Credentials'}, status=status.HTTP_400_BAD_REQUEST)
-
+    
 class PlatoListView(generics.ListAPIView):
     queryset = Plato.objects.all()
     serializer_class = PlatoSerializer

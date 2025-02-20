@@ -17,14 +17,14 @@ body {
 }
 
 h1 {
-    color: #031749;
+    color: #04141b; /* Color principal */
 }
 
 .admin-link {
     display: inline-block;
     margin-top: 20px;
     padding: 10px 20px;
-    background-color: #031749;
+    background-color: #04141b; /* Color principal */
     color: #fff;
     text-decoration: none;
     border-radius: 5px;
@@ -32,7 +32,9 @@ h1 {
 }
 
 .admin-link:hover {
-    background-color: #195283;
+    background-color: #f2c306; /* Color secundario */
+    border: 2px solid #04141b; /* Borde del color principal */
+    color: #04141b;
 }
 
 .image-container {
@@ -106,7 +108,7 @@ form input {
 form button {
     margin-top: 20px;
     padding: 10px;
-    background-color: #031749;
+    background-color: #04141b; /* Color principal */
     color: #fff;
     border: none;
     border-radius: 5px;
@@ -114,11 +116,11 @@ form button {
 }
 
 form button:hover {
-    background-color: #195283;
+    background-color: #f2c306; /* Color secundario */
 }
 
 header {
-    background-color: #031749;
+    background-color: #04141b; /* Color principal */
     padding: 5px;
     color: white;
     display: flex;
