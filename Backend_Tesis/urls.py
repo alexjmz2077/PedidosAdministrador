@@ -33,16 +33,12 @@ urlpatterns = [
 
     path('api/token/', obtain_auth_token, name='api_token_auth'),
 
-    path('api/profiles/', views.ProfileListCreateView.as_view(), name='profile-list-create'),
-    path('api/profiles/<int:pk>/', views.ProfileRetrieveUpdateDestroyView.as_view(), name='profile-detail'),
-    path('api/mesas/', views.MesaListCreateView.as_view(), name='mesa-list-create'),
-    path('api/mesas/<int:pk>/', views.MesaRetrieveUpdateDestroyView.as_view(), name='mesa-detail'),
-    path('api/platos/', views.PlatoListCreateView.as_view(), name='plato-list-create'),
-    path('api/platos/<int:pk>/', views.PlatoRetrieveUpdateDestroyView.as_view(), name='plato-detail'),
-    path('api/pedidos/', views.PedidoListCreateView.as_view(), name='pedido-list-create'),
-    path('api/pedidos/<int:pk>/', views.PedidoRetrieveUpdateDestroyView.as_view(), name='pedido-detail'),
-    path('api/detallepedidos/', views.DetallePedidoListCreateView.as_view(), name='detallepedido-list-create'),
-    path('api/detallepedidos/<int:pk>/', views.DetallePedidoRetrieveUpdateDestroyView.as_view(), name='detallepedido-detail'),
-    path('api/pagos/', views.PagoListCreateView.as_view(), name='pago-list-create'),
-    path('api/pagos/<int:pk>/', views.PagoRetrieveUpdateDestroyView.as_view(), name='pago-detail'),
+    path('api/platos/', views.PlatoListView.as_view(), name='plato-list'),
+    path('api/categorias/', views.CategoriaListView.as_view(), name='categoria-list'),
+    path('api/detallepedidos/', views.DetallePedidoCreateView.as_view(), name='detallepedido-create'),
+    path('api/pedidos/', views.PedidoCreateView.as_view(), name='pedido-create'),
+    path('api/pagos/', views.PagoCreateView.as_view(), name='pago-create'),
+
+    path('api/register/', views.RegisterAPIView.as_view(), name='api_register'),
+    path('api/login/', views.LoginAPIView.as_view(), name='api_login'),
     ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

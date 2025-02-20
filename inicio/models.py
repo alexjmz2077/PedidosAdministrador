@@ -22,6 +22,14 @@ class Mesa(models.Model):
 
     def __str__(self):
         return f"Mesa {self.numero_mesa}"
+    
+
+class Categoria(models.Model):
+    nombre = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.nombre
+
 
 class Plato(models.Model):
     ESTADO_PLATO = [
@@ -31,10 +39,12 @@ class Plato(models.Model):
 
     nombre_plato = models.CharField(max_length=150)
     descripcion = models.TextField()
+    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, related_name='platos', default=1)  # Asume que la categoría con ID 1 es la predeterminada    
     img_plato = models.ImageField(upload_to='img_plato/', blank=True, null=True)
     precio = models.DecimalField(max_digits=6, decimal_places=2)
     estado = models.CharField(max_length=20, choices=ESTADO_PLATO, default='disponible')
     tiempo = models.IntegerField(help_text="Tiempo de cocción en minutos")
+    
 
     def __str__(self):
         return self.nombre_plato

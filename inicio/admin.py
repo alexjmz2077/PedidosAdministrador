@@ -1,19 +1,25 @@
 from django.contrib import admin
-from .models import Mesa, Plato, Pedido, DetallePedido, Pago
+from .models import Mesa, Plato, Pedido, DetallePedido, Pago, Categoria
 from django.utils.html import format_html
 from django.contrib.admin.widgets import AutocompleteSelect
 import mimetypes
 # Register your models here.
 
+@admin.register(Categoria)
+class CategoriaAdmin(admin.ModelAdmin):
+    list_display = ('nombre',)
+    search_fields = ('nombre',)
+    list_per_page = 10
+
 @admin.register(Plato)
 class PlatoAdmin(admin.ModelAdmin):
-    list_display = ('nombre_plato', 'mostar_img', 'precio', 'estado', 'tiempo')
+    list_display = ('nombre_plato', 'categoria', 'mostar_img', 'precio', 'estado', 'tiempo')
     list_filter = ('estado', 'precio')
     search_fields = ('nombre_plato', 'descripcion')
     list_editable = ('estado',)
     list_per_page = 10
     def mostar_img(self, obj):
-        if obj.img_plato:  # Asegurar que hay un QR asignado
+        if obj.img_plato:  
             return format_html('<img src="{}" style="width: 100px; height: 80px;" />', obj.img_plato.url)
         return "Sin Imagen"
     mostar_img.short_description = "Imagen" 

@@ -48,56 +48,58 @@ def register_view(request):
         return redirect('inicio')
     return redirect('inicio')
 
-from rest_framework import generics
-from .models import Profile, Mesa, Plato, Pedido, DetallePedido, Pago
-from .serializers import ProfileSerializer, MesaSerializer, PlatoSerializer, PedidoSerializer, DetallePedidoSerializer, PagoSerializer
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import generics, permissions
+from .models import Categoria, Plato, Pedido, DetallePedido, Pago
+from .serializers import UserSerializer, CategoriaSerializer, PlatoSerializer, PedidoSerializer, DetallePedidoSerializer, PagoSerializer
+from rest_framework.authtoken.models import Token
 
-class ProfileListCreateView(generics.ListCreateAPIView):
-    queryset = Profile.objects.all()
-    serializer_class = ProfileSerializer
+class RegisterAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
 
-class ProfileRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Profile.objects.all()
-    serializer_class = ProfileSerializer
+    def post(self, request, *args, **kwargs):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({'token': token.key}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class MesaListCreateView(generics.ListCreateAPIView):
-    queryset = Mesa.objects.all()
-    serializer_class = MesaSerializer
+class LoginAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
 
-class MesaRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Mesa.objects.all()
-    serializer_class = MesaSerializer
+    def post(self, request, *args, **kwargs):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({'token': token.key}, status=status.HTTP_200_OK)
+        return Response({'error': 'Invalid Credentials'}, status=status.HTTP_400_BAD_REQUEST)
 
-class PlatoListCreateView(generics.ListCreateAPIView):
+class PlatoListView(generics.ListAPIView):
     queryset = Plato.objects.all()
     serializer_class = PlatoSerializer
+    permission_classes = [permissions.AllowAny]
 
-class PlatoRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Plato.objects.all()
-    serializer_class = PlatoSerializer
+class CategoriaListView(generics.ListAPIView):
+    queryset = Categoria.objects.all()
+    serializer_class = CategoriaSerializer
+    permission_classes = [permissions.AllowAny]
 
-class PedidoListCreateView(generics.ListCreateAPIView):
-    queryset = Pedido.objects.all()
-    serializer_class = PedidoSerializer
-
-class PedidoRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Pedido.objects.all()
-    serializer_class = PedidoSerializer
-
-class DetallePedidoListCreateView(generics.ListCreateAPIView):
+class DetallePedidoCreateView(generics.CreateAPIView):
     queryset = DetallePedido.objects.all()
     serializer_class = DetallePedidoSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
-class DetallePedidoRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = DetallePedido.objects.all()
-    serializer_class = DetallePedidoSerializer
+class PedidoCreateView(generics.CreateAPIView):
+    queryset = Pedido.objects.all()
+    serializer_class = PedidoSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
-
-class PagoListCreateView(generics.ListCreateAPIView):
+class PagoCreateView(generics.CreateAPIView):
     queryset = Pago.objects.all()
     serializer_class = PagoSerializer
-
-class PagoRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Pago.objects.all()
-    serializer_class = PagoSerializer
-
+    permission_classes = [permissions.IsAuthenticated]
