@@ -5,6 +5,15 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User, Group
 from django.views.decorators.csrf import csrf_protect
 from .models import Profile
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+
+class UserDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
 
 def inicio(request):
     return render(request, 'inicio.html')
@@ -40,7 +49,8 @@ def register_view(request):
         Profile.objects.create(
             user=user,
             telefono=request.POST.get('telefono'),
-            direccion=request.POST.get('direccion')
+            direccion=request.POST.get('direccion'),
+            cedula=request.POST.get('cedula')
         )
         
         # Iniciar sesión automáticamente
@@ -84,10 +94,21 @@ class LoginAPIView(APIView):
             token, created = Token.objects.get_or_create(user=user)
             return Response({'token': token.key}, status=status.HTTP_200_OK)
         return Response({'error': 'Invalid Credentials'}, status=status.HTTP_400_BAD_REQUEST)
-    
+
+
+class PlatoDetailView(generics.RetrieveAPIView):
+    queryset = Plato.objects.all()
+    serializer_class = PlatoSerializer
+    permission_classes = [permissions.AllowAny]
+
 class PlatoListView(generics.ListAPIView):
     queryset = Plato.objects.all()
     serializer_class = PlatoSerializer
+    permission_classes = [permissions.AllowAny]
+
+class CategoriaDetailView(generics.RetrieveAPIView):
+    queryset = Categoria.objects.all()
+    serializer_class = CategoriaSerializer
     permission_classes = [permissions.AllowAny]
 
 class CategoriaListView(generics.ListAPIView):
@@ -104,6 +125,11 @@ class PedidoCreateView(generics.CreateAPIView):
     queryset = Pedido.objects.all()
     serializer_class = PedidoSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({"request": self.request})
+        return context
 
 class PagoCreateView(generics.CreateAPIView):
     queryset = Pago.objects.all()

@@ -34,10 +34,14 @@ urlpatterns = [
     path('api/token/', obtain_auth_token, name='api_token_auth'),
 
     path('api/platos/', views.PlatoListView.as_view(), name='plato-list'),
+    path('api/platos/<int:pk>/', views.PlatoDetailView.as_view(), name='plato-detail'),
     path('api/categorias/', views.CategoriaListView.as_view(), name='categoria-list'),
+    path('api/categorias/<int:pk>/', views.CategoriaDetailView.as_view(), name='categoria-detail'),
     path('api/detallepedidos/', views.DetallePedidoCreateView.as_view(), name='detallepedido-create'),
     path('api/pedidos/', views.PedidoCreateView.as_view(), name='pedido-create'),
     path('api/pagos/', views.PagoCreateView.as_view(), name='pago-create'),
+
+    path('api/me/', views.UserDetailView.as_view(), name='user-detail'),
 
     path('api/register/', views.RegisterAPIView.as_view(), name='api_register'),
     path('api/login/', views.LoginAPIView.as_view(), name='api_login'),

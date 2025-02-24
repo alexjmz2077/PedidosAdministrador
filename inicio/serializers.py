@@ -1,11 +1,12 @@
 from rest_framework import serializers
 from .models import Profile, Mesa, Plato, Pedido, DetallePedido, Pago, Categoria
 from django.contrib.auth.models import User
+from datetime import datetime
 
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ['telefono', 'direccion']
+        fields = ['telefono', 'direccion', 'cedula']
 
 class UserSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer()
@@ -27,7 +28,8 @@ class UserSerializer(serializers.ModelSerializer):
         Profile.objects.create(
             user=user,
             telefono=profile_data['telefono'],
-            direccion=profile_data['direccion']
+            direccion=profile_data['direccion'],
+            cedula=profile_data['cedula']
         )
         return user
 
@@ -41,20 +43,30 @@ class MesaSerializer(serializers.ModelSerializer):
         model = Mesa
         fields = '__all__'
 
-class PlatoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Plato
-        fields = '__all__'
 
 class CategoriaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Categoria
         fields = '__all__'
 
+class PlatoSerializer(serializers.ModelSerializer):
+    categoria = CategoriaSerializer()
+
+    class Meta:
+        model = Plato
+        fields = ['id', 'nombre_plato', 'descripcion', 'img_plato', 'precio', 'estado', 'tiempo', 'categoria']
+
+
 class PedidoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pedido
-        fields = '__all__'
+        fields = ['mesa']  # Solo requerimos la mesa en el cuerpo de la solicitud
+
+    def create(self, validated_data):
+        validated_data['usuario'] = self.context['request'].user
+        validated_data['estado'] = 'pendiente'
+        validated_data['fecha_entrega'] = datetime.now()
+        return super().create(validated_data)
 
 class DetallePedidoSerializer(serializers.ModelSerializer):
     class Meta:

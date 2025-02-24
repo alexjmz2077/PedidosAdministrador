@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Mesa, Plato, Pedido, DetallePedido, Pago, Categoria
+from .models import Mesa, Plato, Pedido, DetallePedido, Pago, Categoria, Profile
 from django.utils.html import format_html
 from django.contrib.admin.widgets import AutocompleteSelect
 import mimetypes
@@ -9,6 +9,11 @@ import mimetypes
 class CategoriaAdmin(admin.ModelAdmin):
     list_display = ('nombre',)
     search_fields = ('nombre',)
+    list_per_page = 10
+
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ('user', 'telefono', 'direccion', 'cedula')
     list_per_page = 10
 
 @admin.register(Plato)

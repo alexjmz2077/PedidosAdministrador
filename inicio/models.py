@@ -2,11 +2,17 @@ from django.db import models
 from django.contrib.auth.models import User  # Usuario por defecto de Django
 from django.db.models import Sum
 import os
+from django.core.exceptions import ValidationError
+
+def validate_cedula(value):
+    if len(value) != 10 or not value.isdigit():
+        raise ValidationError('La cédula debe tener exactamente 10 dígitos.')
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)  # Relación 1 a 1 con User
     telefono = models.CharField(max_length=15, blank=True, null=True)
     direccion = models.CharField(max_length=255, blank=True, null=True)
+    cedula = models.CharField(max_length=10, unique=True, validators=[validate_cedula])  # cedula con validación
 
     def __str__(self):
         return self.user.username
