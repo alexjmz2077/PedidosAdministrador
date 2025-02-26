@@ -57,10 +57,10 @@ class PlatoSerializer(serializers.ModelSerializer):
         fields = ['id', 'nombre_plato', 'descripcion', 'img_plato', 'precio', 'estado', 'tiempo', 'categoria']
 
 
-class PedidoSerializer(serializers.ModelSerializer):
+class PedidoCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pedido
-        fields = ['mesa']  # Solo requerimos la mesa en el cuerpo de la solicitud
+        fields = ['mesa']  # Solo incluir el campo 'mesa' para el método POST
 
     def create(self, validated_data):
         validated_data['usuario'] = self.context['request'].user
@@ -68,10 +68,26 @@ class PedidoSerializer(serializers.ModelSerializer):
         validated_data['fecha_entrega'] = datetime.now()
         return super().create(validated_data)
 
+class PedidoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Pedido
+        fields = ['id', 'usuario', 'fecha_entrega', 'mesa', 'estado'] 
 class DetallePedidoSerializer(serializers.ModelSerializer):
     class Meta:
         model = DetallePedido
-        fields = '__all__'
+        fields = ['cantidad', 'pedido', 'plato', 'precio_total']
+        read_only_fields = ['precio_total']
+
+    def validate_pedido(self, value):
+        if value.usuario != self.context['request'].user:
+            raise serializers.ValidationError("El pedido no pertenece al usuario autenticado.")
+        return value
+
+    def create(self, validated_data):
+        detalle_pedido = DetallePedido(**validated_data)
+        detalle_pedido.precio_total = detalle_pedido.cantidad * detalle_pedido.plato.precio
+        detalle_pedido.save()
+        return detalle_pedido
 
 class PagoSerializer(serializers.ModelSerializer):
     class Meta:

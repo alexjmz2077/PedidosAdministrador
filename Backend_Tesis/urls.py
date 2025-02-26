@@ -40,9 +40,14 @@ urlpatterns = [
     path('api/detallepedidos/', views.DetallePedidoCreateView.as_view(), name='detallepedido-create'),
     path('api/pedidos/', views.PedidoCreateView.as_view(), name='pedido-create'),
     path('api/pagos/', views.PagoCreateView.as_view(), name='pago-create'),
+    path('api/mesas/', views.MesaListView.as_view(), name='mesa-list'),
+    path('api/mesas/<int:pk>/', views.MesaDetailView.as_view(), name='mesa-detail'),
 
     path('api/me/', views.UserDetailView.as_view(), name='user-detail'),
 
     path('api/register/', views.RegisterAPIView.as_view(), name='api_register'),
     path('api/login/', views.LoginAPIView.as_view(), name='api_login'),
+
+    path('api/mis-pedidos/', views.PedidoListView.as_view(), name='mis-pedidos'),
+    path('api/mis-detallepedidos/', views.DetallePedidoListView.as_view(), name='mis-detallepedidos'),
     ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

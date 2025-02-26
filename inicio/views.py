@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User, Group
 from django.views.decorators.csrf import csrf_protect
-from .models import Profile
+from .models import Mesa, Profile
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
@@ -63,7 +63,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics, permissions
 from .models import Categoria, Plato, Pedido, DetallePedido, Pago
-from .serializers import UserSerializer, CategoriaSerializer, PlatoSerializer, PedidoSerializer, DetallePedidoSerializer, PagoSerializer
+from .serializers import MesaSerializer, PedidoCreateSerializer, UserSerializer, CategoriaSerializer, PlatoSerializer, PedidoSerializer, DetallePedidoSerializer, PagoSerializer
 from rest_framework.authtoken.models import Token
 
 
@@ -121,9 +121,16 @@ class DetallePedidoCreateView(generics.CreateAPIView):
     serializer_class = DetallePedidoSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+class DetallePedidoListView(generics.ListAPIView):
+    serializer_class = DetallePedidoSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return DetallePedido.objects.filter(pedido__usuario=self.request.user)
+
 class PedidoCreateView(generics.CreateAPIView):
     queryset = Pedido.objects.all()
-    serializer_class = PedidoSerializer
+    serializer_class = PedidoCreateSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_serializer_context(self):
@@ -131,7 +138,24 @@ class PedidoCreateView(generics.CreateAPIView):
         context.update({"request": self.request})
         return context
 
+class PedidoListView(generics.ListAPIView):
+    serializer_class = PedidoSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Pedido.objects.filter(usuario=self.request.user)
+
 class PagoCreateView(generics.CreateAPIView):
     queryset = Pago.objects.all()
     serializer_class = PagoSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+class MesaListView(generics.ListAPIView):
+    queryset = Mesa.objects.all()
+    serializer_class = MesaSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+class MesaDetailView(generics.RetrieveAPIView):
+    queryset = Mesa.objects.all()
+    serializer_class = MesaSerializer
     permission_classes = [permissions.IsAuthenticated]
