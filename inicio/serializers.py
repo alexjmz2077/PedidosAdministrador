@@ -63,9 +63,14 @@ class PedidoCreateSerializer(serializers.ModelSerializer):
         fields = ['mesa']  # Solo incluir el campo 'mesa' para el método POST
 
     def create(self, validated_data):
+        mesa = validated_data['mesa']
+        if mesa.estado_mesa == 'ocupada':
+            raise serializers.ValidationError('Mesa ocupada')
         validated_data['usuario'] = self.context['request'].user
         validated_data['estado'] = 'pendiente'
         validated_data['fecha_entrega'] = datetime.now()
+        mesa.estado_mesa = 'ocupada'
+        mesa.save()
         return super().create(validated_data)
 
 class PedidoSerializer(serializers.ModelSerializer):

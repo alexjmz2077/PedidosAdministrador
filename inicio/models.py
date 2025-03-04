@@ -85,6 +85,19 @@ class Pedido(models.Model):
     
     estado = models.CharField(max_length=20, choices=ESTADO_PEDIDO, default='pendiente')
 
+    def save(self, *args, **kwargs):
+        if self.pk is None:  # Only for new orders
+            if self.mesa.estado_mesa == 'ocupada':
+                raise ValidationError('Mesa ocupada')
+            self.mesa.estado_mesa = 'ocupada'
+            self.mesa.save()
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        self.mesa.estado_mesa = 'disponible'
+        self.mesa.save()
+        super().delete(*args, **kwargs)
+        
     def __str__(self):
         return f"Pedido {self.id} - {self.usuario.username}"
 

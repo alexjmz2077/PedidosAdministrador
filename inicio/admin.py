@@ -42,6 +42,10 @@ class PedidoAdmin(admin.ModelAdmin):
     list_editable = ('estado', 'fecha_entrega')
     list_per_page = 10
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "mesa":
+            kwargs["queryset"] = Mesa.objects.filter(estado_mesa='disponible')
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 
