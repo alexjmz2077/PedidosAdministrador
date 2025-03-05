@@ -64,19 +64,21 @@ class PedidoCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         mesa = validated_data['mesa']
-        if mesa.estado_mesa == 'ocupada':
-            raise serializers.ValidationError('Mesa ocupada')
+        
         validated_data['usuario'] = self.context['request'].user
         validated_data['estado'] = 'pendiente'
         validated_data['fecha_entrega'] = datetime.now()
-        mesa.estado_mesa = 'ocupada'
-        mesa.save()
+        #if mesa.estado_mesa == 'ocupada':
+        #    raise serializers.ValidationError('Ocupada')
+        #mesa.estado_mesa = 'ocupada'
+        #mesa.save()
         return super().create(validated_data)
 
 class PedidoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pedido
         fields = ['id', 'usuario', 'fecha_entrega', 'mesa', 'estado'] 
+
 class DetallePedidoSerializer(serializers.ModelSerializer):
     class Meta:
         model = DetallePedido

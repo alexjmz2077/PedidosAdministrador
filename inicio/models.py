@@ -3,6 +3,7 @@ from django.contrib.auth.models import User  # Usuario por defecto de Django
 from django.db.models import Sum
 import os
 from django.core.exceptions import ValidationError
+from rest_framework import serializers
 
 def validate_cedula(value):
     if len(value) != 10 or not value.isdigit():
@@ -88,7 +89,7 @@ class Pedido(models.Model):
     def save(self, *args, **kwargs):
         if self.pk is None:  # Only for new orders
             if self.mesa.estado_mesa == 'ocupada':
-                raise ValidationError('Mesa ocupada')
+                raise serializers.ValidationError({'mesa': 'Ocupada'})
             self.mesa.estado_mesa = 'ocupada'
             self.mesa.save()
         super().save(*args, **kwargs)
