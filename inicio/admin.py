@@ -7,9 +7,15 @@ import mimetypes
 
 @admin.register(Categoria)
 class CategoriaAdmin(admin.ModelAdmin):
-    list_display = ('nombre',)
+    list_display = ('nombre', 'mostar_img')
     search_fields = ('nombre',)
     list_per_page = 10
+
+    def mostar_img(self, obj):
+        if obj.img_categoria:  
+            return format_html('<img src="{}" style="width: 100px; height: 80px;" />', obj.img_categoria.url)
+        return "Sin Imagen"
+    mostar_img.short_description = "Imagen"
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
@@ -23,6 +29,7 @@ class PlatoAdmin(admin.ModelAdmin):
     search_fields = ('nombre_plato', 'descripcion')
     list_editable = ('estado',)
     list_per_page = 10
+
     def mostar_img(self, obj):
         if obj.img_plato:  
             return format_html('<img src="{}" style="width: 100px; height: 80px;" />', obj.img_plato.url)
@@ -46,8 +53,6 @@ class PedidoAdmin(admin.ModelAdmin):
         if db_field.name == "mesa":
             kwargs["queryset"] = Mesa.objects.filter(estado_mesa='disponible')
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
-
 
 @admin.register(DetallePedido)
 class DetallePedidoAdmin(admin.ModelAdmin):
@@ -94,7 +99,3 @@ class MesaAdmin(admin.ModelAdmin):
     list_display = ('numero_mesa',  'estado_mesa')
     list_editable = ('estado_mesa',)
     list_per_page = 10
-
-
-
- 

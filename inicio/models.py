@@ -33,10 +33,25 @@ class Mesa(models.Model):
 
 class Categoria(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
+    img_categoria = models.ImageField(upload_to='img_categoria/', blank=True, null=True) 
 
     def __str__(self):
         return self.nombre
 
+    def delete(self, *args, **kwargs):
+        if self.img_categoria:
+            if os.path.isfile(self.img_categoria.path):
+                os.remove(self.img_categoria.path)
+        super().delete(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        try:
+            this = Categoria.objects.get(id=self.id)
+            if this.img_categoria != self.img_categoria:
+                this.img_categoria.delete(save=False)
+        except Categoria.DoesNotExist:
+            pass
+        super().save(*args, **kwargs)
 
 class Plato(models.Model):
     ESTADO_PLATO = [
