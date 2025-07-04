@@ -72,12 +72,14 @@ class PagoAdmin(admin.ModelAdmin):
             file_url = obj.comprobante_pago.url
             file_type, _ = mimetypes.guess_type(file_url)
 
-            if file_type and file_type.startswith('image'):
-                # Si es una imagen, mostrar una miniatura
+            # Si es imagen o termina en .tmp, intenta mostrar como imagen
+            if (file_type and file_type.startswith('image')) or file_url.lower().endswith('.tmp'):
                 return format_html('<img src="{}" style="width: 100px; height: auto; border-radius: 5px;" />', file_url)
             elif file_type == 'application/pdf':
-                # Si es un PDF, mostrar un enlace de previsualización
                 return format_html('<a href="{}" target="_blank">Ver PDF</a>', file_url)
+            else:
+                # Para otros tipos, solo muestra un enlace de descarga
+                return format_html('<a href="{}" target="_blank">Descargar archivo</a>', file_url)
 
         return "Sin Comprobante"
 
